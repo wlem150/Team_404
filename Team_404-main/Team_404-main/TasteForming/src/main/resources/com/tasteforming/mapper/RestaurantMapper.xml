@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.tasteforming.mapper.RestaurantMapper">
+
+	<select id="getAllData"
+		resultType="com.tasteforming.domain.RestaurantVO">
+          <![CDATA[SELECT * FROM RESTAURANT WHERE RES_NO > 0]]>
+	</select>
+
+	<insert id="insertRest">
+		INSERT INTO restaurant (res_No, res_Name,
+		create_Date, address, info,
+		userId, menu, type,img_path,tel)
+		VALUES
+		(SEQ_RESTAURANT.Nextval, #{res_Name}, sysdate, #{address}, #{info},
+		#{userId}, #{menu}, #{type},#{img_path},#{tel})
+	</insert>
+
+	<!-- res_No 와 userId 값을 체크해서 좋아요를 눌렀는지 확인 -->
+	<select id="read" parameterType="hashmap" resultType="com.tasteforming.domain.LikeVO">
+		SELECT *
+		FROM tbl_like WHERE userId=#{userId} AND res_No=#{res_No}
+	</select>
+
+	<select id="countbyLike" parameterType="map" resultType="int">
+		SELECT
+		COUNT(*) FROM tbl_like WHERE userId=#{userId} AND res_No=#{res_No}
+	</select>
+
+	<!-- create() 메소드를 매핑 -->
+	<insert id="create" parameterType="map">
+		INSERT INTO tbl_like (LIKENO,RES_NO, USERID, LIKE_CHECK)
+		VALUES (SEQ_TBL_LIKE.NEXTVAL,#{res_No},#{userId},0)
+	</insert>
+
+	<update id="like_check" parameterType="HashMap">
+		UPDATE tbl_like
+		SET
+		like_check = like_check + 1
+		WHERE userId=#{userId} AND res_No=#{res_No}
+	</update>
+
+	<update id="like_check_cancel" parameterType="HashMap">
+		UPDATE tbl_like
+		SET
+		like_check = 0
+		WHERE userId=#{userId} AND res_No=#{res_No}
+	</update>
+
+	<update id="like_cnt_up" parameterType="long">
+		update restaurant
+		set likecnt = likecnt + 1
+		where res_No = #{res_No}
+	</update>
+
+	<update id="like_cnt_down" parameterType="long">
+		UPDATE restaurant
+		SET likecnt = likecnt -1
+		WHERE res_No = #{res_No}
+	</update>
+
+	<!-- 추가된 매퍼 -->
+	
+	<select id="getResNo" resultType="long">
+		select res_No from restaurant where res_name = #{res_Name}
+	</select>
+
+	<insert id="insertVisitor">
+		insert into visitor (vno, userId, visitedDate, enabled, res_No, res_Name)
+		values (seq_visitor.Nextval, #{userId}, #{visitedDate}, 0, #{res_No}, #{res_Name})
+	</insert>
+	
+	<select id="getAllVisitor" resultType="com.tasteforming.domain.VisitorVO">
+		select vno, userid, visitedDate, enabled, res_no, res_name from visitor order by vno desc
+	</select>
+	
+<update id="userBlack">
+  update visitor 
+  set enabled = #{enabled}
+  where res_No = #{res_No} and userId = #{userId}
+</update>
+
+	
+</mapper>

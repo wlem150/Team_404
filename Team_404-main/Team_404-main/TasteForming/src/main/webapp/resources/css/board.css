@@ -1,0 +1,100 @@
+.list-container {
+    height: auto;
+    width: 100%;
+    display: table;
+    border-collapse: collapse;
+    margin-top: 40px;
+}
+
+.board_list {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.board_head th {
+    background-color: #eee;
+    text-align: center;
+    padding: 10px;
+
+    font-weight: bold;
+}
+
+.board_list td {
+    text-align: center;
+    padding: 10px;
+    border-top: 1px solid #eee;
+}
+
+
+.board_list tr:hover {
+    background-color: #eee;
+}
+
+.board_list td:nth-child(2) {
+    text-align: left;
+    padding-left: 20px;
+}
+
+.board_list td:nth-child(2) a:hover {
+    text-decoration: underline;
+}
+
+.board_list th:first-child {
+    width: 50px;
+}
+
+.board_list th:nth-child(2) {
+    width: 600px;
+}
+
+.container {
+    align-items: center;
+    height: 74px;
+    width: 1070px;
+    margin: auto;
+}
+
+.margin-bottom {
+    padding-bottom: 80px !important;
+
+}
+
+.board-register {
+    color: rgb(255, 255, 255);
+    background-color: rgba(0, 0, 238, 0.667);
+    height: 30px;
+    float: right;
+    width: 75px;
+    border-radius: 3px;
+    border-width: initial;
+    border-style: initial;
+    border-color: rgb(245, 245, 245);
+    border-image: initial;
+    margin: 10px 7px 0px 0px;
+    transition: all 0.1s ease 0s;
+    bottom: 25px;
+    position: absolute;
+    right: 25px;
+}
+
+.board-register:hover {
+    background-color: #e1e1e1;
+    color: #999;
+    cursor:pointer;
+}
+.pageInfo{
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    bottom: 25px;
+    left: 25px;
+}
+
+.pageInfo li{
+	display:inline-block;
+	padding-left:15px;
+}
+
+.pageInfo li a:hover{
+	color:#1478FF;	
+}

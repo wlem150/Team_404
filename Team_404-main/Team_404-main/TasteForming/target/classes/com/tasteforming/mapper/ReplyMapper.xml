@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.tasteforming.mapper.ReplyMapper">
+
+	<insert id="insert">
+		insert into tbl_board_reply (review_no, board_no, reply, userId)
+		values (seq_board_reply.nextval, #{board_no}, #{reply}, #{userId})
+	</insert>
+
+	<select id="read" resultType="com.tasteforming.domain.ReplyVO">
+		select * from tbl_board_reply where review_no=#{review_no}
+	</select>
+
+	<delete id="delete">
+		delete from tbl_board_reply where review_no=#{review_no}
+	</delete>
+
+	<update id="update">
+		update tbl_board_reply set reply=#{reply}, updateDate =
+		sysdate where review_no=#{review_no}
+	</update>
+	
+	<select id="getListWithPaging"
+		resultType="com.tasteforming.domain.ReplyVO">
+	
+		select review_no, board_no, reply, regDate, updateDate, userId
+		from tbl_board_reply
+		where board_no = #{board_no}
+		order by review_no desc
+	</select>
+	
+	<select id="getTotal" resultType="_int">
+        SELECT COUNT(review_no) FROM tbl_board_reply WHERE board_no = #{board_no}
+    </select>
+    
+<!-- 	<select id="getListWithPaging"
+		resultType="com.tasteforming.domain.ReplyVO">
+		<![CDATA[
+		select review_no, board_no, reply, regDate, updateDate, userId
+		from
+			(
+			select /*+INDEX(tbl_reply idx_reply) */
+			rownum rn, review_no, board_no, reply, userId, repgDate, updateDte
+			from tbl_board_reply
+			where board_no=#{board_no}
+			and review_no>0
+			and rownum <= #{cri.pageNum} * #{cri.amount}
+			)
+			where rn > (#{cri.pageNum} -1) * #{cri.amount}
+		]]>
+	</select> -->
+
+	<select id="getCountByboard_no" resultType="int">
+	<![CDATA[
+		select count(review_no) from tbl_board_reply where board_no = #{board_no}
+	]]>
+
+	</select>
+
+</mapper>

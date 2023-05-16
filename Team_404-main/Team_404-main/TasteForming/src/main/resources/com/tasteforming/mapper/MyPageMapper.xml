@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tasteforming.mapper.MyPageMapper">
+	<sql id="criteria">
+		<trim prefix="(" suffix=") AND" prefixOverrides="OR">
+		</trim>
+	</sql>
+	<select id="getReplyWithPaging"
+		resultType="com.tasteforming.domain.ReviewVO">
+		SELECT *
+		FROM (
+		SELECT ROWNUM RN, B.*
+		FROM (
+		SELECT *
+		FROM
+		RESTAURANT_REVIEW
+		WHERE userId = #{param2}
+		<include refid="criteria" />
+		ORDER BY RESVIEW_NO ASC
+		) B
+		WHERE ROWNUM &lt;= #{param1.pageNum} *
+		#{param1.amount}
+		)
+		WHERE RN > (#{param1.pageNum} - 1) * #{param1.amount}
+	</select>
+
+	<select id="getReplyTotalCnt" resultType="int">
+		select count(*) from RESTAURANT_REVIEW
+		<include refid="criteria"></include>
+
+	</select>
+
+	<update id="updateReply"
+		parameterType="com.tasteforming.domain.ReviewVO">
+		UPDATE RESTAURANT_REVIEW SET
+		content = #{content},
+		UPDATEDATE = sysdate
+		WHERE RESVIEW_NO = #{resview_No}
+	</update>
+	<delete id="deleteReply">
+		delete from RESTAURANT_REVIEW where RESVIEW_NO =
+		#{resview_No}
+	</delete>
+
+	<select id="getReservation"
+		resultType="com.tasteforming.domain.ReserveVO">
+		select * from reservation where userid = #{userId} and
+		cancel_date is null AND CONFIRM = 1
+	</select>
+
+	<select id="getReserveCustomer"
+		resultType="com.tasteforming.domain.ReserveVO">
+		SELECT r.order_no, r.userid, r.res_no, r.order_date,
+		r.cancel_date,
+		r.head_cnt, r.hour, r.res_name
+		FROM reservation r
+		JOIN
+		restaurant t ON r.RES_NO = t.RES_NO
+		WHERE t.userid = #{userId} and
+		r.cancel_date is null and confirm = 1
+	</select>
+
+	<select id="getCustomer"
+		resultType="com.tasteforming.domain.ReserveVO">
+		<![CDATA[
+  SELECT *
+  FROM (
+    SELECT ROWNUM RN, reserve.order_no, reserve.userid, reserve.res_no, reserve.order_date, reserve.cancel_date, reserve.head_cnt, reserve.hour, reserve.res_name, reserve.confirm
+    FROM (
+      SELECT *
+      FROM reservation
+      ]]>
+		<include refid="criteria" />
+      <![CDATA[
+      ORDER BY order_no DESC
+    ) reserve
+    join restaurant t on reserve.res_no = t.res_no
+    WHERE ROWNUM <= #{param1.pageNum} * #{param1.amount} and t.userId = #{param2} and reserve.cancel_date is null and confirm = 0
+  )
+  WHERE RN > (#{param1.pageNum} - 1) * #{param1.amount}
+      ]]>
+	</select>
+
+	<select id="myReservation"
+		resultType="com.tasteforming.domain.ReserveVO">
+    <![CDATA[
+        SELECT *
+        FROM (
+            SELECT ROWNUM RN, reserve.order_no, reserve.userid, reserve.res_no, reserve.order_date, reserve.cancel_date, reserve.head_cnt, reserve.hour, reserve.res_name, reserve.confirm
+            FROM (
+                SELECT *
+                FROM reservation
+                    ]]>
+                <include refid="criteria" />
+                 <![CDATA[
+                ORDER BY order_no DESC
+            ) reserve
+            JOIN restaurant t ON reserve.res_no = t.res_no
+            JOIN member m ON reserve.userId = m.userId
+            WHERE ROWNUM <= #{param1.pageNum} * #{param1.amount} and m.userId = #{param2}
+        )
+        WHERE RN > (#{param1.pageNum} - 1) * #{param1.amount}
+    ]]>
+	</select>
+
+
+
+	<select id="getCustomerTotalCnt" resultType="int">
+		select count(*) from reservation where userId = #{param1}
+		<include refid="criteria"></include>
+
+	</select>
+
+	<update id="confirm"
+		parameterType="com.tasteforming.domain.ReserveVO">
+		UPDATE reservation SET
+		confirm = #{confirm}
+		where order_no
+		= #{order_No}
+	</update>
+
+	<update id="refuse">
+		UPDATE reservation SET
+		cancel_date = #{cancel_Date,
+		jdbcType=DATE}
+		WHERE order_no = #{order_No}
+	</update>
+
+
+	<select id="getBoardWithPaging"
+		resultType="com.tasteforming.domain.BoardVO">
+		SELECT *
+		FROM (
+		SELECT ROWNUM RN, B.*
+		FROM (
+		SELECT *
+		FROM tbl_board
+		WHERE
+		userId = #{param2}
+		<include refid="criteria" />
+		ORDER BY BOARD_NO DESC
+		) B
+		WHERE ROWNUM &lt;= #{param1.pageNum} *
+		#{param1.amount}
+		)
+		WHERE RN > (#{param1.pageNum} - 1) * #{param1.amount}
+	</select>
+
+	<select id="getBoardTotalCnt" resultType="int">
+		select count(*) from tbl_board
+		<include refid="criteria"></include>
+
+	</select>
+
+
+	<update id="orderCancel">
+		update reservation set
+		cancel_date = sysdate
+		where
+		userid = #{userId} and res_Name = #{res_Name} and order_no =
+		#{order_No}
+	</update>
+
+	<update id="updateBoard"
+		parameterType="com.tasteforming.domain.BoardVO">
+		UPDATE tbl_board SET
+		title = #{title},
+		content =
+		#{content},
+		updateDate = sysdate
+		where board_no = #{board_no}
+	</update>
+
+	<delete id="deleteBoard">
+		delete from tbl_board where board_no = #{board_no}
+	</delete>
+
+	<select id="getRestaurantWithUserId"
+		resultType="com.tasteforming.domain.RestaurantVO">
+		SELECT *
+		FROM (
+		SELECT ROWNUM RN, B.*
+		FROM (
+		SELECT *
+		FROM restaurant
+		WHERE
+		userId = #{param2}
+		<include refid="criteria" />
+		ORDER BY res_No DESC
+		) B
+		WHERE ROWNUM &lt;= #{param1.pageNum} *
+		#{param1.amount}
+		)
+		WHERE RN > (#{param1.pageNum} - 1) * #{param1.amount}
+	</select>
+	<select id="getResTotalCnt" resultType="int">
+		select count(*) from restaurant where userId = #{userId}
+		<include refid="criteria"></include>
+	</select>
+
+	<update id="updateRes"
+		parameterType="com.tasteforming.domain.RestaurantVO">
+		UPDATE restaurant SET
+		res_Name = #{res_Name},
+		info =
+		#{info},
+		address = #{address},
+		menu = #{menu},
+		type = #{type}
+		where res_no
+		= #{res_No}
+	</update>
+
+	<delete id="deleteRes">
+		delete from restaurant where res_no = #{res_No}
+	</delete>
+
+	<select id="getLikes"
+		resultType="com.tasteforming.domain.LikeVO">
+		SELECT L.res_no, L.userId, R.res_name,
+		L.like_check,L.evaluation
+		FROM tbl_like L
+		JOIN restaurant R ON L.res_no
+		= R.res_no
+		WHERE L.userId = #{userId} and L.like_check = '1'
+	</select>
+
+	<update id="updateEvaluation">
+		update tbl_like set
+		evaluation = #{evaluation}
+		where
+		res_No = #{res_No} and userId = #{userId}
+
+	</update>
+</mapper>
